@@ -1,3 +1,4 @@
+#include <curses.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,7 +11,6 @@
 #define IS_CLIENT 3
 
 // Global variables
-int socketfd;
 int nrow, ncol;
 char mySide;
 paddle pad;
@@ -29,11 +29,13 @@ void printNumberCenter(int number)
 
 int initializeSockets(int argc, char** argv)
 {
+  int socket_status;
+
   if(strcmp(argv[1], "-s") == 0)
-	{
-    // Only the socket that will be used on the comunnication is returned
-    socketfd = initializeServerSocket();
-    if (socketfd < 0)
+  {
+    // Only the socket that will be used on the communication is returned
+    socket_status = initializeServerSocket();
+    if (socket_status < 0)
     {
       printf("Error connecting\n");
       return 1;
@@ -42,8 +44,8 @@ int initializeSockets(int argc, char** argv)
   }
   else if(strcmp(argv[1], "-c") == 0)
 	{
-    socketfd = initializeClientSocket();
-    if (socketfd <= 0)
+    socket_status = initializeClientSocket();
+    if (socket_status < 0)
     {
       printf("Error connecting\n");
       return 1;
@@ -77,21 +79,24 @@ void setBallPositionFactor(double position_factor)
   ballPositionFactor = position_factor;
 }
 
-void chooseSide(int return_code)
+void chooseSide(int status_code)
 {
-  char choice;
-  if (return_code == IS_SERVER)
+  if (status_code == IS_SERVER)
   {
     printf("\nChoose side. Options: L or R: ");
-    scanf("%c", &choice);
+    char choice = getchar();
+
     mySide = choice;
     sendSideChoice(choice);
+
+    printf("\nYour side is: %c\n", mySide);
   }
   // If IS_CLIENT
   else
   {
     printf("\nWaiting for server to choose side... \n");
-    choice = receiveSideChoice();
+
+    char choice = receiveSideChoice();
     if (choice == 'L')
     {
       mySide = 'R';
@@ -100,6 +105,7 @@ void chooseSide(int return_code)
     {
       mySide = 'L';
     }
+    printf("Your side is: %c\n", mySide);
   }
 }
 
@@ -117,16 +123,16 @@ void endProgram()
 
 int main(int argc, char** argv)
 {
-  int return_code = initializeSockets(argc, argv);
-  if (return_code == 1)
+  int status_code = initializeSockets(argc, argv);
+  if (status_code == 1)
   {
-    closeSocket(socketfd);
+    closeSocket();
     return 1;
   }
 
-  chooseSide(return_code);
+  chooseSide(status_code);
   
-  closeSocket(socketfd);
+  closeSocket();
 
   /*
 	initializeNcursesEnvironment();

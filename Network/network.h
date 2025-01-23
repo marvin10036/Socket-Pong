@@ -15,8 +15,7 @@ void sendSideChoice(char choice);
 
 char receiveSideChoice();
 
-void closeSocket(int sockfd);
+void closeSocket();
 
 // From main.c
-extern int socketfd;
 extern int ncol, nrow;

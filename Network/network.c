@@ -1,5 +1,9 @@
 #include "network.h"
 
+// Main socket of the communication
+int socketfd;
+
+
 int initializeClientSocket()
 {
   // Specific struct for inet connections
@@ -9,7 +13,7 @@ int initializeClientSocket()
   // Socket inet port
   sockfd_address.sin_port = 9734;
   // Socket inet address field with substruct specifically for ipv4 with server's ip
-  sockfd_address.sin_addr.s_addr = inet_addr("192.168.0.106");
+  sockfd_address.sin_addr.s_addr = inet_addr("10.244.0.15");
 
   int len_sockfd_address = sizeof(sockfd_address);
 
@@ -20,8 +24,7 @@ int initializeClientSocket()
     perror("connect() error");
     return 1;
   }
-  char ch[2] = "OK";
-  write(socketfd, &ch, 2);
+
   return 0;
 }
 
@@ -35,12 +38,11 @@ int initializeServerSocket()
 
   server_address.sin_family = AF_INET;
   server_address.sin_port = 9734;
-  // Para usar todas as interfaces
+  // To use all interfaces
   server_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
   len_server_address = sizeof(server_address);
 
-  char ch[2];
   int return_code;
 
   server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -54,11 +56,10 @@ int initializeServerSocket()
 
   // Global variable socketfd
   socketfd = accept(server_sockfd, (struct sockaddr *) &client_address, (socklen_t *) &len_client_address);
-  read(socketfd, &ch, 2);
-  printf("%s\n", ch);
 
   // Closing socket that just made the first connection
-  closeSocket(server_sockfd);
+  close(server_sockfd);
+
   return 0;
 }
 
@@ -87,8 +88,8 @@ char receiveSideChoice()
   return choice;
 }
 
-void closeSocket(int sockfd)
+void closeSocket()
 {
-  close(sockfd);
+  close(socketfd);
 }
 
