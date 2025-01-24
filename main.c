@@ -1,90 +1,76 @@
-#include <curses.h>
-#include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "Game/game.h"
 #include "Network/network.h"
+#include "NCursesEnv/NCursesEnv.h"
 
 
+#define INPUT_ERROR 1
 #define IS_SERVER 2
 #define IS_CLIENT 3
 
 // Global variables
 int nrow, ncol;
-char mySide;
+char mySide; // L or R
 paddle pad;
 ball bal;
 
 // Necessary for conversion between terminals of different sizes
-char isSmallerNcols;
 double ballPositionFactor;
 
-// Debugging
-void printNumberCenter(int number)
+
+// If it's server or client
+int getRole(int argc, char** argv)
 {
-  printf("%d\n", number);
-  getch();
+  if(argc == 4 && strcmp(argv[1], "-s") == 0 && strcmp(argv[2], "-p") == 0)
+  {
+    return IS_SERVER;
+  }
+  else if(argc == 6 && strcmp(argv[1], "-c") == 0 && strcmp(argv[2], "-h") == 0 && strcmp(argv[4], "-p") == 0)
+	{
+    return IS_CLIENT;
+  }
+  return INPUT_ERROR;
 }
 
-int initializeSockets(int argc, char** argv)
+
+int initializeSockets(int role, char** argv)
 {
   int socket_status;
 
-  if(strcmp(argv[1], "-s") == 0)
+  if(role == IS_SERVER)
   {
     // Only the socket that will be used on the communication is returned
-    socket_status = initializeServerSocket();
-    if (socket_status < 0)
+    socket_status = initializeServerSocket(argv[3]);
+    if (socket_status != 0)
     {
       printf("Error connecting\n");
       return 1;
     }
-    return IS_SERVER;
   }
-  else if(strcmp(argv[1], "-c") == 0)
+  else if(role == IS_CLIENT)
 	{
-    socket_status = initializeClientSocket();
-    if (socket_status < 0)
+    socket_status = initializeClientSocket(argv[3], argv[5]);
+    if (socket_status != 0)
     {
       printf("Error connecting\n");
       return 1;
     }
-    return IS_CLIENT;
   }
-  return 1;
+  return 0;
 }
 
-void initializeNcursesEnvironment()
+void chooseSide(int role)
 {
-  // Initializes the curses environment together with its stdscr
-	initscr();
-  // Disable line buffering, aka don't wait for CR to process user input
-  // Using cbreak() instead of raw to let controll characters enabled
-	cbreak();
-	// Do not print what the user presses
-	noecho();
-	// Enable arrow keys and function keys (F1, F2 ...)
-	keypad(stdscr, TRUE);
-	// Get current screen size. Not ingame resize tolerant
-	getmaxyx(stdscr, nrow, ncol);
-  // Timeout for the getch() function from ncurses
-  timeout(0);
-}
-
-// Multiplied or divided to the current ball position so that it can be adapted
-// to terminal windows of different sizes
-void setBallPositionFactor(double position_factor)
-{
-  ballPositionFactor = position_factor;
-}
-
-void chooseSide(int status_code)
-{
-  if (status_code == IS_SERVER)
+  if (role == IS_SERVER)
   {
     printf("\nChoose side. Options: L or R: ");
     char choice = getchar();
+    if (choice != 'L' && choice != 'R')
+    {
+      choice = 'L';
+    }
 
     mySide = choice;
     sendSideChoice(choice);
@@ -109,38 +95,61 @@ void chooseSide(int status_code)
   }
 }
 
-void endProgram()
+// The ballPositionFactor  is multiplied to the current ball position so that
+// it can be adapted to terminal windows of different sizes
+void setBallPositionFactor()
 {
-	printw("Fim!!! \n");
-	printw("Aperte qualquer tecla para sair");
-  // The refresh() function would print the chatacters to the screen normally, but
-  // the getch() ends up doing the same thing.
-	refresh();
-	getch();
-  // Finish ncurses environment
-	endwin();
+  // Y axis exchange
+  sendNrow();
+  int opponent_nrow = receiveNrow();
+
+  if(nrow < opponent_nrow)
+  {
+    ballPositionFactor = 1 / ((double) opponent_nrow / nrow);
+  }
+  else
+	{
+    ballPositionFactor = (double) nrow / opponent_nrow;
+  }
 }
 
 int main(int argc, char** argv)
 {
-  int status_code = initializeSockets(argc, argv);
-  if (status_code == 1)
+  int role = getRole(argc, argv);
+  if (role == INPUT_ERROR)
   {
-    closeSocket();
+    printf("Input error\n");
     return 1;
   }
 
-  chooseSide(status_code);
-  
-  closeSocket();
+  int status_code = initializeSockets(role, argv);
+  if (status_code == 1)
+  {
+    printf("\nIt's possible that the port is on TIME_WAIT, change the port or wait untill it's released.\n");
+    return 1;
+  }
 
-  /*
+  chooseSide(role);
+
+  // To get nrow value before setBallPositionFactor()
 	initializeNcursesEnvironment();
-  // printNumberCenter(0);
 
-  gameLoop();
-	endProgram();
-  */
+  // Involves Server and Client Y axis exchange
+  setBallPositionFactor();
+
+  int won = gameLoop();
+	finishNcursesEnvironment();
+
+  if (won)
+  {
+    printf("You won.\n");
+  }
+  else
+  {
+    printf("You lost.\n");
+  }
+
+  closeSocket();
   return 0;
 }
 

@@ -2,18 +2,19 @@
 
 // Main socket of the communication
 int socketfd;
+int socketfd_flags;
 
 
-int initializeClientSocket()
+int initializeClientSocket(char* address, char* port)
 {
   // Specific struct for inet connections
   struct sockaddr_in sockfd_address;
   // Socket inet family
   sockfd_address.sin_family = AF_INET;
   // Socket inet port
-  sockfd_address.sin_port = 9734;
+  sockfd_address.sin_port = atoi(port);
   // Socket inet address field with substruct specifically for ipv4 with server's ip
-  sockfd_address.sin_addr.s_addr = inet_addr("10.244.0.15");
+  sockfd_address.sin_addr.s_addr = inet_addr(address);
 
   int len_sockfd_address = sizeof(sockfd_address);
 
@@ -28,7 +29,7 @@ int initializeClientSocket()
   return 0;
 }
 
-int initializeServerSocket()
+int initializeServerSocket(char* port)
 {
   int server_sockfd;
   int len_server_address, len_client_address;
@@ -37,7 +38,7 @@ int initializeServerSocket()
   struct sockaddr_in client_address;
 
   server_address.sin_family = AF_INET;
-  server_address.sin_port = 9734;
+  server_address.sin_port = atoi(port);
   // To use all interfaces
   server_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
@@ -51,7 +52,7 @@ int initializeServerSocket()
     perror("bind() error");
     return 1;
   }
-  printf("Awaiting client connection...\n");
+  printf("Awaiting client connection on port %s...\n", port);
   listen(server_sockfd, 1);
 
   // Global variable socketfd
@@ -63,18 +64,36 @@ int initializeServerSocket()
   return 0;
 }
 
-void sendNcols()
+void setNonBlockReading()
 {
-  write(socketfd, &ncol, sizeof(ncol));
+  socketfd_flags = fcntl(socketfd, F_GETFL, 0);
+  fcntl(socketfd, F_SETFL, O_NONBLOCK | socketfd_flags);
 }
 
-/*
-int readNcols()
+void unsetNonBlockReading()
 {
-  int opponent_ncols;
-  read(socketfd, ncols, sizeof(ncols));
+  socketfd_flags = fcntl(socketfd, F_GETFL, 0);
+  fcntl(socketfd, F_SETFL, (O_NONBLOCK | socketfd_flags) ^ O_NONBLOCK);
 }
-*/
+
+void sendEndOfGameMessage()
+{
+  // The other side is waiting for ball parameters
+  int end_game_mock_ball[3] = {-255, -255, -255};
+  write(socketfd, &end_game_mock_ball, sizeof(int) * 3);
+}
+
+void sendNrow()
+{
+  write(socketfd, &nrow, sizeof(nrow));
+}
+
+int receiveNrow()
+{
+  int opponent_nrow;
+  read(socketfd, &opponent_nrow, sizeof(int));
+  return opponent_nrow;
+}
 
 void sendSideChoice(char choice)
 {
@@ -86,6 +105,19 @@ char receiveSideChoice()
   char choice;
   read(socketfd, &choice, 1);
   return choice;
+}
+
+void sendBall(int y_pos, int x_increment, int y_increment)
+{
+  int ball_info[3] = {y_pos, x_increment, y_increment};
+  write(socketfd, &ball_info, sizeof(int) * 3);
+}
+
+int* receiveBall()
+{
+  int* ball_info = calloc(3, sizeof(int));
+  read(socketfd, ball_info, sizeof(int) * 3);
+  return ball_info;
 }
 
 void closeSocket()
