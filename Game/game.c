@@ -27,8 +27,8 @@ void unmarshallAndUpdateBall(int* marshalledBall)
 void initializeBall()
 {
   // Set ball's standard values
-	bal.x_pos = (ncol-1)/2;
-	bal.y_pos = (nrow-1)/2;
+  bal.x_pos = (ncol-1)/2;
+  bal.y_pos = (nrow-1)/2;
   bal.x_increment = -1;
   bal.y_increment = 1;
 
@@ -100,7 +100,7 @@ int checkBallColission()
     }
     else
     {
-      // Eliminating ball's last position before sending it
+      // Erasing ball from last position before sending it
       mvprintw(bal.y_pos, bal.x_pos, " ");
       sendBall(bal.y_pos, bal.x_increment, bal.y_increment);
       return BALL_SENT;
@@ -126,14 +126,14 @@ int checkBallColission()
 
 void updateBallPos(int new_x_pos, int new_y_pos)
 {
-	bal.x_pos = new_x_pos;
-	bal.y_pos = new_y_pos;
+  bal.x_pos = new_x_pos;
+  bal.y_pos = new_y_pos;
 }
 
 void updatePaddlePos(int new_y0_pos, int new_y1_pos)
 {
-	pad.y_range[0] = new_y0_pos;
-	pad.y_range[1] = new_y1_pos;
+  pad.y_range[0] = new_y0_pos;
+  pad.y_range[1] = new_y1_pos;
 }
 
 void moveBall()
@@ -219,7 +219,8 @@ int gameLoop()
     input_key = getch();
     movePaddle(input_key);
 
-    if (game_clock == 145000){
+    if (game_clock == 145000)
+    {
       // If you are waiting for the oponnent to pass the ball
       if (waiting_for_ball)
       {

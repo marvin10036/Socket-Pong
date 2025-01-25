@@ -63,6 +63,7 @@ int initializeSockets(int role, char** argv)
 
 void chooseSide(int role)
 {
+  // If IS_SERVER
   if (role == IS_SERVER)
   {
     printf("\nChoose side. Options: L or R: ");
@@ -108,7 +109,7 @@ void setBallPositionFactor()
     ballPositionFactor = 1 / ((double) opponent_nrow / nrow);
   }
   else
-	{
+  {
     ballPositionFactor = (double) nrow / opponent_nrow;
   }
 }
@@ -132,13 +133,13 @@ int main(int argc, char** argv)
   chooseSide(role);
 
   // To get nrow value before setBallPositionFactor()
-	initializeNcursesEnvironment();
+  initializeNcursesEnvironment();
 
   // Involves Server and Client Y axis exchange
   setBallPositionFactor();
 
   int won = gameLoop();
-	finishNcursesEnvironment();
+  finishNcursesEnvironment();
 
   if (won)
   {

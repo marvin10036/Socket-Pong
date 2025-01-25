@@ -9,7 +9,7 @@ void printNumberCenter(int number)
 
 void initializeNcursesEnvironment()
 {
-  // Initializes the curses environment together with its stdscr
+	// Initializes the curses environment together with its stdscr
 	initscr();
   // Disable line buffering, aka don't wait for CR to process user input
   // Using cbreak() instead of raw to let controll characters enabled
@@ -20,8 +20,8 @@ void initializeNcursesEnvironment()
 	keypad(stdscr, TRUE);
 	// Get current screen size. Not ingame resize tolerant
 	getmaxyx(stdscr, nrow, ncol);
-  // Timeout for the getch() function from ncurses
-  timeout(0);
+	// Timeout for the getch() function from ncurses
+	timeout(0);
 }
 
 void finishNcursesEnvironment()

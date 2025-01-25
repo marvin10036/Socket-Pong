@@ -10,6 +10,5 @@ void finishNcursesEnvironment();
 
 // From main.c
 extern int nrow, ncol;
-extern int nrow, ncol;
 extern char mySide;
 
