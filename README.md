@@ -2,7 +2,7 @@
 Simple terminal pong game made with ncurses. The Networking portion was implemented using Sockets. Needs two machines with different IPs to be played.
 
 <div align="center">
-  ![Program demo GIF](demo.gif)
+  \![Program demo GIF](demo.gif)
 </div>
 
 ## Table of Contents
