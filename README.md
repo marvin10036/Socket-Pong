@@ -9,7 +9,7 @@ Simple terminal pong game made with ncurses. The Networking portion was implemen
 - [Usage](#usage)
   - [Server side](#server-side)
   - [Client side](#client-side)
-- [General Info](#general-info)
+- [General info](#general-info)
 - [License](#license)
 - [Disclaimer](#disclaimer)
 
