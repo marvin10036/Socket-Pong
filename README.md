@@ -1,7 +1,7 @@
 # Socket-Pong
 Simple terminal pong game made with ncurses. The Networking portion was implemented using Sockets. Needs two machines with different IPs to be played.
 
-![Program Showcase GIF](Showcase.gif)
+![Program demo GIF](demo.gif)
 
 ## Table of Contents
 - [Dependencies](#dependencies)
