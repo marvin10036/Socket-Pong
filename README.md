@@ -11,7 +11,7 @@ Simple terminal pong game made with ncurses. The Networking portion was implemen
 - [Usage](#usage)
   - [Server side](#server-side)
   - [Client side](#client-side)
-- [General info](#general-info)
+- [General Info](#general-info)
 - [License](#license)
 - [Disclaimer](#disclaimer)
 
@@ -43,7 +43,7 @@ Use the flag `-c` to indicate that you are the client. And choose the hostname a
  ./Socket-Pong -c -h xxx.xxx.xxx.xxx -p xxxxx
 ```
 
-## Genereal info
+## General Info
 
 - Not screen resize tolerant.
 - Sometimes after closing the program the socket might be temporally on `TIME_WAIT` state. You may try a different port and/or wait untill the socket is released.
