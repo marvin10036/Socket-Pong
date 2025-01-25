@@ -33,14 +33,14 @@ make
 
 Use the flag `-s` to indicate that you are the server. And choose a port with the `-p` flag.
 ```
- ./Socket-Pong -s -p xxxxx
- ```
+./Socket-Pong -s -p xxxxx
+```
 
 ### Client side
 
 Use the flag `-c` to indicate that you are the client. And choose the hostname and the port of the server with the `-h` and `-p` flags repectively.
 ```
- ./Socket-Pong -c -h xxx.xxx.xxx.xxx -p xxxxx
+./Socket-Pong -c -h xxx.xxx.xxx.xxx -p xxxxx
 ```
 
 ## General Info
