@@ -39,7 +39,7 @@ Use the flag `-c` to indicate that you are the client. And choose the hostname a
  ./Socket-Pong -c -h xxx.xxx.xxx.xxx -p xxxxx
 ```
 
-## Genereal Info
+## Genereal info
 
 - Not screen resize tolerant.
 - Sometimes after closing the program the socket might be temporally on `TIME_WAIT` state. You may try a different port and/or wait untill the socket is released.
