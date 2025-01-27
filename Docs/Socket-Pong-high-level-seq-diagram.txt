@@ -1,4 +1,4 @@
-title High Level view of Socket-Pong core portions
+title High Level view of Socket-Pong core sections
 
 participant ServerSideUser
 participant Server
