@@ -1,5 +1,5 @@
 # Socket-Pong
-Simple terminal pong game made with ncurses. The Networking portion was implemented using Sockets. Needs two machines with different IPs to be played.
+Simple terminal pong game made with ncurses. The Networking portion was implemented using sockets.
 
 <p align="center">
   <img src="Demo-GIFs/demo1.gif" alt="Program demo GIF">
@@ -38,7 +38,7 @@ Use the flag `-s` to indicate that you are the server. And choose a port with th
 
 ### Client side
 
-Use the flag `-c` to indicate that you are the client. And choose the hostname and the port of the server with the `-h` and `-p` flags repectively.
+Use the flag `-c` to indicate that you are the client. And choose the hostname and the port of the server with the `-h` and `-p` flags respectively.
 ```
 ./Socket-Pong -c -h xxx.xxx.xxx.xxx -p xxxxx
 ```
@@ -46,7 +46,7 @@ Use the flag `-c` to indicate that you are the client. And choose the hostname a
 ## General Info
 
 - Not screen resize tolerant.
-- Sometimes after closing the program the socket might be temporally on `TIME_WAIT` state. You may try a different port and/or wait untill the socket is released.
+- Sometimes, after closing the program, the socket might be temporally on `TIME_WAIT` state. You may try a different port and/or wait untill the socket is released.
 
 ## License
 This project is licensed under the GPL v3 License. See the [LICENSE](LICENSE) file for details.
