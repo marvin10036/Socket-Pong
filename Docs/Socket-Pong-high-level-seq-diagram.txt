@@ -1,0 +1,79 @@
+title High Level view of Socket-Pong core portions
+
+participant ServerSideUser
+participant Server
+participant Client
+participant ClientSideUser
+
+activate Server
+activate Client
+
+ServerSideUser->Server: Launches Server
+
+ClientSideUser->Client: Launches Client
+
+Server->Server: getRole()
+Client->Client: getRole()
+
+Server->Server: initializeSockets()
+activate Server
+Client->Client: initializeSockets()
+activate Client
+
+Server->Server: initializeServerSocket()
+Client->Client: initializeClientSocket()
+
+Client<-->Server: Connection (Socket API)
+space
+deactivate Server
+deactivate Client
+
+Server->Server: chooseSide()
+activate Server
+Client->Client: chooseSide()
+activate Client
+
+ServerSideUser->Server: Chooses Side
+Server-->Client: sendSideChoice
+Client-->Client: receiveSideChoice
+space
+deactivate Server
+deactivate Client
+
+Server->Server: initializeNcursesEnvironment()
+Client->Client: initializeNcursesEnvironment()
+
+Server->Server: setBallPositionFactor()
+activate Server
+Client->Client: setBallPositionFactor()
+activate Client
+
+Server-->Client: sendNrow
+Server-->Server: receiveNrow
+Client-->Server: sendNrow
+Client-->Client: receiveNrow
+space
+deactivate Server
+deactivate Client
+
+Server->Server: gameLoop()
+activate Server
+Client->Client: gameLoop()
+activate Client
+
+note over Server, Client: Game Loop (details were omitted)
+
+loop "until one side calls sendEndOfGameMessage()"
+Server-->Client: sendBall()
+Client-->Server:sendBall()
+end
+
+space
+deactivate Server
+deactivate Client
+
+Client->Client:finishNcursesEnvironment()
+Server->Server:finishNcursesEnvironment()
+
+Client->Client:closeSocket()
+Server->Server:closeSocket()
